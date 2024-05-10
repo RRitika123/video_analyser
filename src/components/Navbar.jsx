@@ -12,10 +12,12 @@ function Navbar() {
         <div className='collapse navbar-collapse' id='navbarNav'>
           <ul className='navbar-nav ms-auto'>
             <li className='nav-item'>
-              <Link className='nav-link' to='/upload'>UPLOAD VIDEO</Link>
-            </li>
-            <li className='nav-item'>
-              <Link className='nav-link' to='/library'>VIDEO LIBRARY</Link>
+              <Link className='nav-link' to='/upload'>
+                <button type="button" className="btn btn-outline-light">UPLOAD VIDEO</button>
+              </Link>
+              <Link className='nav-link' to='/library'>
+              <button type="button" className="btn btn-outline-light">VIDEO LIBRARY</button>
+              </Link>
             </li>
           </ul>
         </div>
