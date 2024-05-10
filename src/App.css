@@ -1,0 +1,54 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #007bff; /* Adjust the color to match the 'ANALYZE' button */
+  z-index: 1000; /* Ensure navbar stays on top of other content */
+}
+
+.navbar a {
+  color: white;
+  padding: 14px 20px;
+  text-decoration: none;
+  text-align: center;
+  display: inline-block;
+}
+
+.navbar-nav {
+  display: flex;
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
+
+.nav-item {
+  padding: 0.5rem 1rem;
+}
+
+.nav-link {
+  color: white;
+  padding-right: 0.5rem;
+}
+
+/* Ensure content doesn't get hidden behind the navbar */
+.body-content {
+  padding-top: 60px; /* Adjust according to the navbar's height */
+}
+
+@media (max-width: 576px) {
+  .navbar-nav {
+    flex-direction: column;
+  }
+
+  .nav-item {
+    text-align: center;
+  }
+}
