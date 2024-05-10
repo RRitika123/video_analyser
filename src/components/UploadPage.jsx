@@ -6,7 +6,6 @@ import { useDropzone } from 'react-dropzone';
 function UploadPage() {
   const [file, setFile] = useState();
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
   const [message, setMessage] = useState('');
   const [videoId, setVideoId] = useState(null); // State to hold the video ID
   const [isUploaded, setIsUploaded] = useState(false); // State to manage upload status
@@ -46,7 +45,6 @@ function UploadPage() {
     const formData = new FormData();
     formData.append('video', file);
     formData.append('title', title);
-    formData.append('description', description);
     try {
       const config = {
         headers: {
@@ -92,7 +90,6 @@ function UploadPage() {
     <div className="container p-4">
       <form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
         <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} className="form-control" />
-        <textarea placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} className="form-control"></textarea>
         <div {...getRootProps()} className={`dropzone ${isDragActive ? 'bg-light' : ''}`} style={dropzoneStyle}>
           <input {...getInputProps()} />
           <p>Drop a video here, or click to select video</p>

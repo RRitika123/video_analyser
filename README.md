@@ -1,17 +1,17 @@
 # Video Analyzer App
 
-Video Analyzer is a comprehensive platform designed for uploading, storing, and analyzing video content. It allows users to upload videos, view them in a video library, and perform detailed analyses, including summarization and question answering, on uploaded content.
+Video Analyzer is a comprehensive platform designed for uploading, storing, and analyzing video content. It enables users to upload videos in MP4 format, manage them in a video library, and utilize advanced analysis features such as summarization and question answering. The platform emphasizes ease of use with features like drag-and-drop upload functionality and a responsive design for seamless access across devices.
 
 ## Overview
 
-The Video Analyzer app leverages React for its frontend, ensuring a dynamic and responsive user experience. Flask is used for the backend, providing robust server-side functionalities. SQLite serves as the database, managing data storage and retrieval efficiently. The application architecture is modular, with separate pages for video upload, video library, and video analysis, including features such as drag-and-drop upload and real-time analysis results.
+The Video Analyzer app utilizes React for its frontend, providing a dynamic and responsive user interface. The backend is powered by Flask, offering robust server-side functionality, while SQLite is used for efficient data management and storage. The application is structured into separate modules for video upload, video library management, and video analysis, ensuring a user-friendly experience.
 
 ## Features
 
-- **Video Upload**: Users can upload videos in MP4 format, either by selecting the file manually or using a drag-and-drop interface.
-- **Video Library**: Uploaded videos are displayed with thumbnails, titles, and options for analysis or deletion.
-- **Video Analysis**: Offers tools for summarizing the video content and answering specific questions related to the uploaded videos.
-- **Responsive Design**: Ensures a seamless user experience across various devices and screen sizes.
+- **Video Upload**: Support for uploading videos in MP4 format, with drag-and-drop functionality and real-time upload status updates.
+- **Video Library**: A comprehensive library displaying uploaded videos with thumbnails and options for further analysis or deletion.
+- **Video Analysis**: Detailed analysis tools, including video summarization and question answering, available for each video in the library.
+- **Responsive Design**: A fluid layout that adapts to various screen sizes, ensuring accessibility on desktops, tablets, and mobile devices.
 
 ## Getting Started
 

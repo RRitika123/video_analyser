@@ -30,7 +30,6 @@ patch_request_class(app, size=None)  # Optionally set maximum file size, default
 class Video(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(128), nullable=False)
-    description = db.Column(db.String(256), nullable=True)
     filepath = db.Column(db.String(256), nullable=False)
     thumbnail_path = db.Column(db.String(256), nullable=True)
     unique_thumbnail_path = db.Column(db.String(256), nullable=True)  # New column for unique thumbnail path
@@ -68,7 +67,6 @@ def upload_video():
         return jsonify({'error': 'No video part in the request'}), 400
     file = request.files['video']
     title = request.form.get('title', 'Untitled Video')
-    description = request.form.get('description', '')
     if file.filename == '':
         app.logger.error('No selected file')
         return jsonify({'error': 'No selected file'}), 400
@@ -85,16 +83,15 @@ def upload_video():
             # Convert numpy array frame to an image and save
             new_frame_image = Image.fromarray(frame)
             new_frame_image.save(unique_thumbnail_path)
-            new_video = Video(title=title, description=description, filepath=file_path, thumbnail_path=unique_thumbnail_path, unique_thumbnail_path=unique_thumbnail_path)
+            new_video = Video(title=title, filepath=file_path, thumbnail_path=unique_thumbnail_path, unique_thumbnail_path=unique_thumbnail_path)
             db.session.add(new_video)
             db.session.commit()
             app.logger.info(f'Video uploaded successfully: {filename}')
             return jsonify({
                 'message': 'Video uploaded successfully',
-                'videoId': new_video.id,  # Return the video ID for redirection
+                'videoId': new_video.id,
                 'video': {
                     'title': title,
-                    'description': description,
                     'filename': filename,
                     'filepath': file_path,
                     'thumbnail_path': unique_thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if unique_thumbnail_path else None,
@@ -115,7 +112,6 @@ def get_videos():
         videos_data = [{
             'id': video.id,
             'title': video.title,
-            'description': video.description,
             'filepath': video.filepath,
             'thumbnail_path': video.thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if video.thumbnail_path else None,
             'unique_thumbnail_path': video.unique_thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if video.unique_thumbnail_path else None
