@@ -10,13 +10,14 @@
   top: 0;
   left: 0;
   width: 100%;
-  background-color: #007bff; /* Adjust the color to match the 'ANALYZE' button */
+  background-color: #007bff; /* Keep color consistent with the 'ANALYZE' button */
   z-index: 1000; /* Ensure navbar stays on top of other content */
+  padding: 8px 20px; /* Adjusted padding to make navbar thinner */
 }
 
 .navbar a {
   color: white;
-  padding: 14px 20px;
+  padding: 8px 20px; /* Adjust padding for alignment and readability */
   text-decoration: none;
   text-align: center;
   display: inline-block;
@@ -40,7 +41,7 @@
 
 /* Ensure content doesn't get hidden behind the navbar */
 .body-content {
-  padding-top: 60px; /* Adjust according to the navbar's height */
+  padding-top: 50px; /* Adjust according to the new navbar's height */
 }
 
 @media (max-width: 576px) {
@@ -50,5 +51,10 @@
 
   .nav-item {
     text-align: center;
+  }
+  
+  /* Adjusted navbar padding for mobile view to ensure it remains thin */
+  .navbar {
+    padding: 8px 10px; /* Reduced padding for smaller screens */
   }
 }
