@@ -13,10 +13,10 @@ function Navbar() {
           <ul className='navbar-nav ms-auto'>
             <li className='nav-item'>
               <Link className='nav-link' to='/upload'>
-                <button type="button" className="btn btn-outline-light"><b>UPLOAD VIDEO</b></button>
+                <button type="button" className="btn btn-outline-light">UPLOAD VIDEO</button>
               </Link>
               <Link className='nav-link' to='/library'>
-              <button type="button" className="btn btn-outline-light"><b>VIDEO LIBRARY</b></button>
+              <button type="button" className="btn btn-outline-light">VIDEO LIBRARY</button>
               </Link>
             </li>
           </ul>

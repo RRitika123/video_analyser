@@ -90,13 +90,11 @@ function UploadPage() {
     <div className="container p-4">
       <form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
         <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} className="form-control" />
-
-        <div {...getRootProps()} className={`dropzone ${isDragActive ? 'bg-light' : ''}`} style={dropzoneStyle}>
+        <div {...getRootProps()} className={`dropzone ${isDragActive ? 'bg-light' : ''}`} class="shadow mb-5 bg-body-tertiary rounded" style={dropzoneStyle}>
           <input {...getInputProps()} />
           <p>Drop a video here, or click to select video</p>
         </div>
-
-        <button type="submit" className="btn btn-primary" disabled={isLoading}><b>{isLoading ? 'Uploading...' : 'Upload'}</b></button>
+        <button type="submit" className="btn btn-primary" disabled={isLoading}>{isLoading ? 'Uploading...' : 'Upload'}</button>
         {isLoading && (
           <div className="progress">
             <div className="progress-bar" role="progressbar" style={{ width: `${uploadProgress}%` }} aria-valuenow={uploadProgress} aria-valuemin="0" aria-valuemax="100">{uploadProgress}%</div>
