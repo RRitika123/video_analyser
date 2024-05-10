@@ -95,7 +95,7 @@ function UploadPage() {
         <textarea placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} className="form-control"></textarea>
         <div {...getRootProps()} className={`dropzone ${isDragActive ? 'bg-light' : ''}`} style={dropzoneStyle}>
           <input {...getInputProps()} />
-          <p>Drop your video here, or click to select video</p>
+          <p>Drop a video here, or click to select video</p>
         </div>
         <button type="submit" className="btn btn-primary" disabled={isLoading}>{isLoading ? 'Uploading...' : 'Upload'}</button>
         {isLoading && (

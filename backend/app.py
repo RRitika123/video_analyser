@@ -8,6 +8,7 @@ import io
 from moviepy.editor import VideoFileClip
 from PIL import Image
 from flask_migrate import Migrate
+import time
 
 
 app = Flask(__name__)
@@ -32,6 +33,7 @@ class Video(db.Model):
     description = db.Column(db.String(256), nullable=True)
     filepath = db.Column(db.String(256), nullable=False)
     thumbnail_path = db.Column(db.String(256), nullable=True)
+    unique_thumbnail_path = db.Column(db.String(256), nullable=True)  # New column for unique thumbnail path
 
     def __repr__(self):
         return f'<Video {self.title}>'
@@ -44,6 +46,9 @@ class Video(db.Model):
             if self.thumbnail_path and os.path.exists(self.thumbnail_path):
                 os.remove(self.thumbnail_path)
                 app.logger.info(f'Deleted thumbnail file: {self.thumbnail_path}')
+            if self.unique_thumbnail_path and os.path.exists(self.unique_thumbnail_path):
+                os.remove(self.unique_thumbnail_path)
+                app.logger.info(f'Deleted unique thumbnail file: {self.unique_thumbnail_path}')
             db.session.delete(self)
             db.session.commit()
             app.logger.info(f'Video {self.title} deleted successfully from the database.')
@@ -75,11 +80,12 @@ def upload_video():
             # Generate thumbnail
             video_clip = VideoFileClip(file_path)
             frame = video_clip.get_frame(1)  # Get a frame at 1 second
-            thumbnail_path = os.path.join(app.config['UPLOADED_VIDEOS_DEST'], f'thumbnail_{filename}.png')
+            unique_thumbnail_filename = f'thumbnail_{int(time.time())}_{filename}.png'
+            unique_thumbnail_path = os.path.join(app.config['UPLOADED_VIDEOS_DEST'], unique_thumbnail_filename)
             # Convert numpy array frame to an image and save
             new_frame_image = Image.fromarray(frame)
-            new_frame_image.save(thumbnail_path)
-            new_video = Video(title=title, description=description, filepath=file_path, thumbnail_path=thumbnail_path)
+            new_frame_image.save(unique_thumbnail_path)
+            new_video = Video(title=title, description=description, filepath=file_path, thumbnail_path=unique_thumbnail_path, unique_thumbnail_path=unique_thumbnail_path)
             db.session.add(new_video)
             db.session.commit()
             app.logger.info(f'Video uploaded successfully: {filename}')
@@ -91,7 +97,8 @@ def upload_video():
                     'description': description,
                     'filename': filename,
                     'filepath': file_path,
-                    'thumbnail_path': thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if thumbnail_path else None
+                    'thumbnail_path': unique_thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if unique_thumbnail_path else None,
+                    'unique_thumbnail_path': unique_thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if unique_thumbnail_path else None
                 }
             }), 201
         except Exception as e:
@@ -110,7 +117,8 @@ def get_videos():
             'title': video.title,
             'description': video.description,
             'filepath': video.filepath,
-            'thumbnail_path': video.thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if video.thumbnail_path else None
+            'thumbnail_path': video.thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if video.thumbnail_path else None,
+            'unique_thumbnail_path': video.unique_thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if video.unique_thumbnail_path else None
         } for video in videos]
         app.logger.info('Fetched videos successfully')
         return jsonify(videos_data), 200
@@ -166,6 +174,13 @@ def delete_video(video_id):
             except Exception as e:
                 app.logger.error(f'Error deleting thumbnail file {video.thumbnail_path}: {e}', exc_info=True)
                 return jsonify({'error': 'Failed to delete thumbnail file. The file might be in use or locked.'}), 500
+        if video.unique_thumbnail_path and os.path.exists(video.unique_thumbnail_path):
+            try:
+                os.remove(video.unique_thumbnail_path)
+                app.logger.info(f'Deleted unique thumbnail file: {video.unique_thumbnail_path}')
+            except Exception as e:
+                app.logger.error(f'Error deleting unique thumbnail file {video.unique_thumbnail_path}: {e}', exc_info=True)
+                return jsonify({'error': 'Failed to delete unique thumbnail file. The file might be in use or locked.'}), 500
         db.session.delete(video)
         db.session.commit()
         app.logger.info(f'Video {video.title} deleted successfully from the database.')
