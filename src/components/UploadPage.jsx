@@ -14,6 +14,14 @@ function UploadPage() {
   const [uploadProgress, setUploadProgress] = useState(0); // Added state for upload progress
   const navigate = useNavigate(); // Initialize useNavigate
 
+  const truncateFileName = (fileName) => {
+    const maxLength = 20;
+    if (fileName.length > maxLength) {
+      return `${fileName.substring(0, maxLength)}...`;
+    }
+    return fileName;
+  };
+
   const onDrop = useCallback(acceptedFiles => {
     // Assuming only single file upload, take the first file from the accepted files array.
     const selectedFile = acceptedFiles[0];
@@ -22,8 +30,9 @@ function UploadPage() {
       return;
     }
     setFile(selectedFile);
-    // Update the message to include the file name
-    setMessage(`File ready for upload: ${selectedFile.name}`);
+    // Update the message to include the file name, ensuring it doesn't exceed a certain length
+    const truncatedFileName = truncateFileName(selectedFile.name);
+    setMessage(`File ready for upload: ${truncatedFileName}`);
     setIsUploaded(false);
     setIsLoading(false);
     // Reset message and progress when new file is dropped
@@ -112,7 +121,7 @@ function UploadPage() {
         )}
         {isUploaded && videoId && <button type="button" onClick={handleAnalyzeClick} className="btn btn-success mt-3">Analyze</button>} {/* Conditionally render the Analyze button based on upload status and video ID presence and changed the button color to green */}
       </form>
-      {message && <div className="mt-3 text-center text-danger">{message}</div>}
+      {message && <div className="mt-3 text-center text-danger" title={file ? file.name : ''}>{message}</div>}
     </div>
   );
 }

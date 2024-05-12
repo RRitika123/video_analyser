@@ -58,3 +58,39 @@
     padding: 8px 10px; /* Reduced padding for smaller screens */
   }
 }
+
+/* Upload Form Styles */
+.uploadForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%; /* Ensure the form takes up the full width of its container */
+  max-width: 500px; /* Maximum width of the form */
+  margin: auto; /* Center the form horizontally */
+  padding: 20px; /* Added padding to ensure consistent shape */
+  border: 1px solid #ccc; /* Added border to visually maintain form shape */
+  border-radius: 5px; /* Added border-radius for aesthetic purposes */
+}
+
+.uploadForm input[type="file"] {
+  width: 100%; /* Make the file input take the full width of the form */
+  max-width: 480px; /* Maximum width to maintain form shape */
+  overflow: hidden; /* Hide overflowed content */
+  text-overflow: ellipsis; /* Add ellipsis for overflowed content */
+  white-space: nowrap; /* Prevent text from wrapping to a new line */
+  border: 1px solid #ccc; /* Added border for consistency */
+  padding: 10px; /* Added padding for better user experience */
+  margin-bottom: 10px; /* Added margin for spacing between elements */
+}
+
+.fileNameDisplay {
+  max-width: 480px; /* Matching the form input max-width */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background-color: #f8f9fa; /* Added background color for visibility */
+  padding: 10px; /* Added padding for alignment */
+  border: 1px solid #ccc; /* Added border for definition */
+  border-radius: 5px; /* Added border-radius for aesthetic consistency */
+  margin-bottom: 20px; /* Added margin for spacing */
+}
