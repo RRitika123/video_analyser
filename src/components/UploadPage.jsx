@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
 import { useDropzone } from 'react-dropzone';
+import uploadIcon from '../assets/uploadIcon.png'; // Import the upload icon
 
 function UploadPage() {
   const [file, setFile] = useState();
@@ -84,14 +85,23 @@ function UploadPage() {
     minHeight: '200px', // Ensure constant height
     width: '100%', // Ensure constant width
     height: '200px', // Ensure constant height
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    transition: 'background-color 0.3s ease', // Smooth transition for background color change
+    boxShadow: isDragActive ? '0 0 10px rgba(0, 0, 255, 0.5)' : 'none', // Add shadow effect when dragging
+    transform: isDragActive ? 'scale(1.05)' : 'none' // Slightly increase size when dragging
   };
 
   return (
     <div className="container p-4">
       <form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
         <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} className="form-control" />
-        <div {...getRootProps()} className={`dropzone ${isDragActive ? 'bg-light' : ''}`} class="shadow mb-5 bg-body-tertiary rounded" style={dropzoneStyle}>
+        <div {...getRootProps()} className={`dropzone ${isDragActive ? 'bg-light' : ''}`} style={dropzoneStyle}>
           <input {...getInputProps()} />
+          
+          <img src={uploadIcon} alt="Upload icon" style={{ width: '50px', height: '50px', marginBottom: '10px' }}/>
           <p>Drop a video here, or click to select video</p>
         </div>
         <button type="submit" className="btn btn-primary" disabled={isLoading}>{isLoading ? 'Uploading...' : 'Upload'}</button>
