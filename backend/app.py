@@ -9,7 +9,8 @@ from moviepy.editor import VideoFileClip
 from PIL import Image
 from flask_migrate import Migrate
 import time
-
+import logging
+from file_utils import delete_video_file  # Import the utility function for deleting video files safely
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for the Flask app
@@ -39,9 +40,7 @@ class Video(db.Model):
 
     def delete(self):
         try:
-            if os.path.exists(self.filepath):
-                os.remove(self.filepath)
-                app.logger.info(f'Deleted video file: {self.filepath}')
+            delete_video_file(self.filepath)  # Use the utility function to safely delete the video file
             if self.thumbnail_path and os.path.exists(self.thumbnail_path):
                 os.remove(self.thumbnail_path)
                 app.logger.info(f'Deleted thumbnail file: {self.thumbnail_path}')
@@ -156,31 +155,13 @@ def delete_video(video_id):
         if not video:
             app.logger.error(f'Video with ID {video_id} not found')
             return jsonify({'error': 'Video not found'}), 404
-        if os.path.exists(video.filepath):
-            try:
-                os.remove(video.filepath)
-                app.logger.info(f'Deleted video file: {video.filepath}')
-            except Exception as e:
-                app.logger.error(f'Error deleting video file {video.filepath}: {e}', exc_info=True)
-                return jsonify({'error': 'Failed to delete video file. The file might be in use or locked.'}), 500
-        if video.thumbnail_path and os.path.exists(video.thumbnail_path):
-            try:
-                os.remove(video.thumbnail_path)
-                app.logger.info(f'Deleted thumbnail file: {video.thumbnail_path}')
-            except Exception as e:
-                app.logger.error(f'Error deleting thumbnail file {video.thumbnail_path}: {e}', exc_info=True)
-                return jsonify({'error': 'Failed to delete thumbnail file. The file might be in use or locked.'}), 500
-        if video.unique_thumbnail_path and os.path.exists(video.unique_thumbnail_path):
-            try:
-                os.remove(video.unique_thumbnail_path)
-                app.logger.info(f'Deleted unique thumbnail file: {video.unique_thumbnail_path}')
-            except Exception as e:
-                app.logger.error(f'Error deleting unique thumbnail file {video.unique_thumbnail_path}: {e}', exc_info=True)
-                return jsonify({'error': 'Failed to delete unique thumbnail file. The file might be in use or locked.'}), 500
-        db.session.delete(video)
-        db.session.commit()
+        if not video.delete():
+            return jsonify({'error': 'Failed to delete the video. The file is currently locked or in use. Please try again later.'}), 423  # 423 Locked
         app.logger.info(f'Video {video.title} deleted successfully from the database.')
         return jsonify({'message': 'Video deleted successfully'}), 200
+    except PermissionError as e:
+        app.logger.error(f'PermissionError encountered while deleting video with ID {video_id}: {e}', exc_info=True)
+        return jsonify({'error': 'The file is currently locked or in use. Please try again later.'}), 423
     except Exception as e:
         app.logger.error(f'Failed to delete video with ID {video_id}: {e}', exc_info=True)
         return jsonify({'error': 'Internal server error'}), 500
