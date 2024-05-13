@@ -11,6 +11,8 @@ from flask_migrate import Migrate
 import time
 import logging
 from file_utils import delete_video_file  # Import the utility function for deleting video files safely
+from video_to_audio import convert_video_to_audio, speech_to_text
+from summarize_text import authenticate_client, summarize_text
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for the Flask app
@@ -121,27 +123,27 @@ def get_videos():
         app.logger.error(f"Failed to fetch videos: {e}", exc_info=True)
         return jsonify({'error': 'Failed to fetch videos'}), 500
 
-@app.route('/analyze/<video_id>', methods=['GET'])
-def analyze_video(video_id):
+@app.route('/api/analyze-video/<int:video_id>', methods=['GET'])
+def analyze_video_api(video_id):
+    video = Video.query.get(video_id)
+    if not video:
+        return jsonify({'error': 'Video not found'}), 404
+    
     try:
-        video = Video.query.get(video_id)
-        if not video:
-            app.logger.error(f'Video with ID {video_id} not found')
-            return jsonify({'error': 'Video not found'}), 404
-
-        # Mock analysis data based on the video ID
-        analysis_data = {
-            'video_id': video_id,
-            'summary': f"This is a mock summary for video with ID {video_id}.",
-            'questions_answers': [
-                {'question': 'What is the main theme?', 'answer': 'The main theme is a mock theme.'},
-                {'question': 'How long is the video?', 'answer': 'The video length is mocked.'}
-            ]
-        }
-        app.logger.info(f'Analysis for video ID {video_id} completed successfully.')
-        return jsonify(analysis_data), 200
+        # Convert video to audio
+        audio_path = convert_video_to_audio(video.filepath)
+        
+        # Transcribe audio to text
+        transcript_path = speech_to_text(audio_path)
+        
+        # Authenticate the client for text analytics
+        client = authenticate_client()
+        
+        # Generate summary from transcription
+        summary_text = summarize_text(client, transcript_path)
+        return jsonify({'summary': summary_text}), 200
     except Exception as e:
-        app.logger.error(f'Failed to analyze video: {e}', exc_info=True)
+        app.logger.error(f"Error analyzing video {video_id}: {e}", exc_info=True)
         return jsonify({'error': 'Failed to analyze video'}), 500
 
 @app.route('/uploads/videos/<filename>')
