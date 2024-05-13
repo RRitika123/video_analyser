@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 const VideoLibrary = () => {
   const [videos, setVideos] = useState([]);
   const [error, setError] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -23,6 +24,7 @@ const VideoLibrary = () => {
 
   const deleteVideo = async (videoId) => {
     if (window.confirm('Are you sure you want to delete this video?')) {
+      setIsDeleting(true);
       try {
         await axios.delete(`http://localhost:8000/delete/${videoId}`);
         setVideos(videos.filter(video => video.id !== videoId));
@@ -30,6 +32,8 @@ const VideoLibrary = () => {
       } catch (error) {
         console.error('Failed to delete the video:', error);
         setError('Failed to delete the video.');
+      } finally {
+        setIsDeleting(false);
       }
     }
   };
@@ -53,8 +57,8 @@ const VideoLibrary = () => {
               <Link to={`/analyze/${video.id}`} className="inline-block bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
                 ANALYZE
               </Link>
-              <button onClick={() => deleteVideo(video.id)} className="ml-2 inline-block bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                DELETE
+              <button onClick={() => deleteVideo(video.id)} className="ml-2 inline-block bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" disabled={isDeleting}>
+                {isDeleting ? 'DELETING...' : 'DELETE'}
               </button>
             </div>
           ))}

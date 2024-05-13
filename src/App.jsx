@@ -5,6 +5,7 @@ import UploadPage from './components/UploadPage';
 import VideoLibraryPage from './components/VideoLibraryPage';
 import VideoAnalyzerPage from './components/VideoAnalyzerPage';
 import Navbar from './components/Navbar';
+import LandingPage from './components/LandingPage'; // Import the LandingPage component
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Navbar />
         <div className="body-content">
           <Routes>
+            <Route path="/" element={<LandingPage />} /> {/* Add the LandingPage component at the root path */}
             <Route path="/upload" element={<UploadPage />} />
             <Route path="/library" element={<VideoLibraryPage />} />
             <Route path="/analyze/:videoId" element={<VideoAnalyzerPage />} />

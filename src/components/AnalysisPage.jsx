@@ -6,14 +6,29 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 function AnalysisPage() {
     const { videoId } = useParams();
     const [analysis, setAnalysis] = useState({ summary: '', questions_answers: [] });
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
     useEffect(() => {
-        axios.get(`/api/analysis/${videoId}`)
+        axios.get(`http://localhost:8000/api/analyze-video/${videoId}`)
             .then(response => {
-                setAnalysis(response.data);
+                setAnalysis({ summary: response.data.summary, questions_answers: [] }); // Assuming the API only returns summary for now
+                setLoading(false);
             })
-            .catch(error => console.error('There was an error retrieving the analysis data:', error));
+            .catch(error => {
+                console.error('There was an error retrieving the analysis data:', error);
+                setError('Failed to fetch analysis data.');
+                setLoading(false);
+            });
     }, [videoId]);
+
+    if (loading) {
+        return <div className="container mt-5">Loading...</div>;
+    }
+
+    if (error) {
+        return <div className="container mt-5">Error: {error}</div>;
+    }
 
     return (
         <div className="container mt-5">
