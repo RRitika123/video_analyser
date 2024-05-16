@@ -168,6 +168,44 @@ def delete_video(video_id):
         app.logger.error(f'Failed to delete video with ID {video_id}: {e}', exc_info=True)
         return jsonify({'error': 'Internal server error'}), 500
 
+@app.route('/api/video/metadata/<int:video_id>', methods=['GET'])
+def video_metadata(video_id):
+    video = Video.query.get(video_id)
+    if video:
+        video_metadata = {
+            'id': video.id,
+            'title': video.title,
+            'filepath': video.filepath,
+            'thumbnail_path': video.thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if video.thumbnail_path else None,
+            'unique_thumbnail_path': video.unique_thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if video.unique_thumbnail_path else None,
+            # Assuming the upload date is the file's last modified time
+            'upload_date': time.ctime(os.path.getmtime(video.filepath)),
+            'file_size': os.path.getsize(video.filepath)
+        }
+        return jsonify(video_metadata), 200
+    else:
+        return jsonify({'error': 'Video not found'}), 404
+
+@app.route('/api/analyze/transcript/<int:video_id>', methods=['GET'])
+def get_transcript(video_id):
+    video = Video.query.get(video_id)
+    if not video:
+        return jsonify({'error': 'Video not found'}), 404
+    
+    # Adjust the transcript file naming to match the speech_to_text output
+    transcript_filename = f"transcript_{video.id}.txt"
+    transcript_path = os.path.join(app.config['UPLOADED_VIDEOS_DEST'], transcript_filename)
+    if os.path.exists(transcript_path):
+        try:
+            with open(transcript_path, 'r') as file:
+                transcript = file.read()
+            return jsonify({'transcript': transcript}), 200
+        except IOError as e:
+            app.logger.error(f'Failed to read the transcript file: {e}', exc_info=True)
+            return jsonify({'error': 'Failed to read the transcript file'}), 500
+    else:
+        return jsonify({'error': 'Transcript not found'}), 404
+
 if __name__ == '__main__':
     with app.app_context():
         try:
