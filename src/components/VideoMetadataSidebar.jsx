@@ -10,7 +10,7 @@ const VideoMetadataSidebar = ({ title, uploadDate, fileSize, thumbnail, duration
             <img src={thumbnail} alt="Video Thumbnail" className="mb-3" />
             <p className="mb-1"><strong>Title:</strong> {title}</p>
             <p className="mb-1"><strong>Upload Date:</strong> {uploadDate}</p>
-            <p className="mb-1"><strong>File Size:</strong> {fileSize} KB</p>
+            <p className="mb-1"><strong>File Size:</strong> {fileSize}</p>
             <p><strong>Duration:</strong> {displayDuration}</p> {/* Display duration in seconds */}
         </div>
     );

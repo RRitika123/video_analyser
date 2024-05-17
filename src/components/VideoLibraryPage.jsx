@@ -60,8 +60,8 @@ function VideoLibraryPage() {
               />
               <div className="card-body">
                 <h5 className="card-title">{video.title}</h5>
-                <a href={`/analyze/${video.id}`} className="btn btn-primary me-2">ANALYZE</a>
-                <button onClick={() => deleteVideo(video.id)} className="btn btn-danger">DELETE</button>
+                <a href={`/analyze/${video.id}`} className="btn btn-primary me-2">SUMMARIZE</a>
+                <button onClick={() => deleteVideo(video.id)} className="btn btn-outline-primary"><i class="bi bi-trash3"></i></button>
               </div>
             </div>
           </div>

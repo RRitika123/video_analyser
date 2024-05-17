@@ -135,17 +135,37 @@ def analyze_video_api(video_id):
         return jsonify({'error': 'Video not found'}), 404
     
     try:
+        # Ensure the video file exists before attempting to convert and analyze
+        if not os.path.exists(video.filepath):
+            app.logger.error(f"Video file not found at path: {video.filepath}")
+            return jsonify({'error': 'Video file not found'}), 404
+
         # Convert video to audio
         audio_path = convert_video_to_audio(video.filepath)
         
+        # Validate audio conversion success
+        if not audio_path or not os.path.exists(audio_path):
+            app.logger.error(f"Failed to convert video to audio for video ID {video_id}")
+            return jsonify({'error': 'Failed to convert video to audio'}), 500
+        
         # Transcribe audio to text
         transcript_path = speech_to_text(audio_path)
+        
+        # Validate transcription success
+        if not transcript_path or not os.path.exists(transcript_path):
+            app.logger.error(f"Failed to transcribe audio for video ID {video_id}")
+            return jsonify({'error': 'Failed to transcribe audio'}), 500
         
         # Authenticate the client for text analytics
         client = authenticate_client()
         
         # Generate summary from transcription
         summary_text = summarize_text(client, transcript_path)
+        
+        # Cleanup - Optionally remove the audio file and transcript after summarization to save space
+        # os.remove(audio_path)
+        # os.remove(transcript_path)
+
         return jsonify({'summary': summary_text}), 200
     except Exception as e:
         app.logger.error(f"Error analyzing video {video_id}: {e}", exc_info=True)

@@ -55,7 +55,7 @@ const VideoLibrary = () => {
               />
               <h3 className="text-gray-900 mb-3">{video.title}</h3>
               <Link to={`/analyze/${video.id}`} className="inline-block bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                ANALYZE
+                SUMMARIZE
               </Link>
               <button onClick={() => deleteVideo(video.id)} className="ml-2 inline-block bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" disabled={isDeleting}>
                 {isDeleting ? 'DELETING...' : 'DELETE'}
