@@ -10,6 +10,7 @@ from PIL import Image
 from flask_migrate import Migrate
 import time
 import logging
+from datetime import datetime  # Added import for datetime
 from file_utils import delete_video_file  # Import the utility function for deleting video files safely
 from video_to_audio import convert_video_to_audio, speech_to_text
 from summarize_text import authenticate_client, summarize_text
@@ -36,6 +37,7 @@ class Video(db.Model):
     filepath = db.Column(db.String(256), nullable=False)
     thumbnail_path = db.Column(db.String(256), nullable=True)
     unique_thumbnail_path = db.Column(db.String(256), nullable=True)  # New column for unique thumbnail path
+    duration = db.Column(db.Integer, nullable=True)  # New field for video duration in seconds
 
     def __repr__(self):
         return f'<Video {self.title}>'
@@ -84,7 +86,8 @@ def upload_video():
             # Convert numpy array frame to an image and save
             new_frame_image = Image.fromarray(frame)
             new_frame_image.save(unique_thumbnail_path)
-            new_video = Video(title=title, filepath=file_path, thumbnail_path=unique_thumbnail_path, unique_thumbnail_path=unique_thumbnail_path)
+            duration = int(video_clip.duration)  # Get video duration in seconds
+            new_video = Video(title=title, filepath=file_path, thumbnail_path=unique_thumbnail_path, unique_thumbnail_path=unique_thumbnail_path, duration=duration)
             db.session.add(new_video)
             db.session.commit()
             app.logger.info(f'Video uploaded successfully: {filename}')
@@ -96,7 +99,8 @@ def upload_video():
                     'filename': filename,
                     'filepath': file_path,
                     'thumbnail_path': unique_thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if unique_thumbnail_path else None,
-                    'unique_thumbnail_path': unique_thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if unique_thumbnail_path else None
+                    'unique_thumbnail_path': unique_thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if unique_thumbnail_path else None,
+                    'duration': duration
                 }
             }), 201
         except Exception as e:
@@ -115,7 +119,8 @@ def get_videos():
             'title': video.title,
             'filepath': video.filepath,
             'thumbnail_path': video.thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if video.thumbnail_path else None,
-            'unique_thumbnail_path': video.unique_thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if video.unique_thumbnail_path else None
+            'unique_thumbnail_path': video.unique_thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if video.unique_thumbnail_path else None,
+            'duration': video.duration
         } for video in videos]
         app.logger.info('Fetched videos successfully')
         return jsonify(videos_data), 200
@@ -178,9 +183,9 @@ def video_metadata(video_id):
             'filepath': video.filepath,
             'thumbnail_path': video.thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if video.thumbnail_path else None,
             'unique_thumbnail_path': video.unique_thumbnail_path.replace(app.config['UPLOADED_VIDEOS_DEST'], app.config['UPLOADED_VIDEOS_URL']) if video.unique_thumbnail_path else None,
-            # Assuming the upload date is the file's last modified time
-            'upload_date': time.ctime(os.path.getmtime(video.filepath)),
-            'file_size': os.path.getsize(video.filepath)
+            'upload_date': datetime.fromtimestamp(os.path.getmtime(video.filepath)).strftime('%Y-%m-%d'),  # Modified to show only date
+            'file_size': os.path.getsize(video.filepath) // 1024,  # Modified to convert to KB
+            'duration': video.duration
         }
         return jsonify(video_metadata), 200
     else:

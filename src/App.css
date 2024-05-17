@@ -94,3 +94,60 @@
   border-radius: 5px; /* Added border-radius for aesthetic consistency */
   margin-bottom: 20px; /* Added margin for spacing */
 }
+
+/* Sidebar Styles */
+.sidebar {
+  width: 250px; /* Adjust width as necessary */
+  background-color: #f0f2f5; /* Light background color for contrast */
+  border-right: 2px solid #dee2e6; /* Border to visually separate sidebar from content */
+  padding: 20px; /* Adequate padding for internal elements */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content horizontally */
+  justify-content: center; /* Center content vertically */
+  height: calc(100vh - 50px); /* Full height minus navbar height */
+  position: fixed; /* Fixed position to stay visible on scroll */
+  left: 0; /* Align to the left side */
+  top: 50px; /* Below the navbar */
+  overflow-y: auto; /* Enable scrolling for overflow content */
+}
+
+.sidebar h3, .sidebar .metadata, .sidebar img {
+  margin-bottom: 15px; /* Space below each element */
+}
+
+.sidebar img {
+  max-width: 100%; /* Ensure the image fits within the sidebar */
+  height: auto; /* Maintain aspect ratio */
+  object-fit: contain; /* Ensure the image is fully visible */
+}
+
+.sidebar .metadata {
+  font-size: 16px; /* Slightly smaller font size for metadata */
+}
+
+.sidebar .metadata strong {
+  color: #333; /* Darker color for labels */
+}
+
+/* Adjust the main content area to not overlap with the sidebar */
+.content-area {
+  margin-left: 250px; /* Equal to the sidebar width */
+  padding: 20px; /* Consistent padding around the content */
+}
+
+@media (max-width: 768px) {
+  /* Adjustments for smaller screens */
+  .sidebar {
+    width: 100%; /* Full width */
+    height: auto; /* Adjust height */
+    border-right: none; /* Remove border */
+    border-bottom: 2px solid #dee2e6; /* Add bottom border */
+    position: relative; /* Adjust position */
+    align-items: center; /* Ensure content is centered on smaller screens */
+  }
+  
+  .content-area {
+    margin-left: 0; /* Remove margin */
+  }
+}
